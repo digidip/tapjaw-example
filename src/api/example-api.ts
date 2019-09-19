@@ -1,4 +1,5 @@
 import { createServer, Server, plugins } from 'restify';
+import basicAuthentication from './basic-authentication';
 
 const restServer: Server = createServer({
     name: 'digidip example API',
@@ -36,6 +37,20 @@ restServer.get(
     },
     (req, res, next) => {
         console.log('GET /animals called');
+        res.json(payload);
+        res.end();
+        next();
+    }
+);
+
+restServer.get(
+    {
+        path: '/secure-animals',
+        name: 'List of animals'
+    },
+    basicAuthentication,
+    (req, res, next) => {
+        console.log('GET /secure-animals called');
         res.json(payload);
         res.end();
         next();

@@ -1,23 +1,21 @@
-import { TapjawCommand, StdoutIterator } from 'tapjaw-importer';
+import { TapjawCommand, StdoutIterator, TapjawApplyAuthorizationHttpHeaderWrapper, TapjawBasicAuthenticator } from 'tapjaw-importer';
 import ExampleAdapter, { AnimalMessage } from '../adapters/example-adapter';
 import { TapjawCommandArgs, TapjawCommandFlags } from 'tapjaw-importer/lib/contracts/tapjaw-command';
 import ExampleHttpConnector from '../connectors/example-http-connector';
-import { flags } from '@oclif/command';
 import { TapjawAdapterCallback } from 'tapjaw-importer/lib/contracts/tapjaw-adapter';
 
-export default class Hello extends TapjawCommand {
+export default class HelloSecure extends TapjawCommand {
     /**
      * Description of the command
      */
-    static description = 'Example of the Tapjaw Command';
+    static description = 'Example of the Tapjaw Command (Using basic authentication, user/pass: "test")';
 
     /**
      * Examples of the usage
      */
     static examples = [
-        `$ bin/run hello
-$ bin/run hello --limit=1
-$ bin/run hello --post
+        `$ bin/run hello-secure test test
+$ bin/run hello-secure test test --limit=1
 `,
     ];
 
@@ -27,24 +25,29 @@ $ bin/run hello --post
      */
     static flags = {
         ...TapjawCommand.defaultFlags,
-        post: flags.boolean({ char: 'p', description: 'Use POST method in adapter.', default: false }),
     };
 
     /**
      * The arguments used by this command
      */
-    static args = [];
+    static args = [
+        {
+            name: 'username',
+            required: true,
+            description: 'The HTTP basic authentication username.'
+        },
+        {
+            name: 'password',
+            required: true,
+            description: 'The HTTP basic authentication password.'
+        }
+    ];
 
     /**
      * Provide the current class to instance so OCLIF can determine which arguments and flags exist
      * against the hello command.
      */
-    instance = Hello;
-
-    /**
-     * Provide your Adapter implementation which is to be used with this command.
-     */
-    protected adapter = new ExampleAdapter(new ExampleHttpConnector());
+    instance = HelloSecure;
 
     /**
      * Provide an iterator on how to output the TapjawMessages which are yielded from the Adapter.
@@ -60,25 +63,22 @@ $ bin/run hello --post
      * @yields AnimalMessage
      */
     protected getAdapterCallback(args: TapjawCommandArgs, flags: TapjawCommandFlags): TapjawAdapterCallback {
-        const adapter = this.adapter;
+        const { username, password } = args;
+        const adapter = new ExampleAdapter(
+            new ExampleHttpConnector(
+                new TapjawApplyAuthorizationHttpHeaderWrapper(
+                    new TapjawBasicAuthenticator(username, password)
+                )
+            )
+        );
         const { post } = flags;
-
-        if (post) {
-            // Call the Adapter method using POST.
-            return async function* (): AsyncGenerator<AnimalMessage> {
-                /**
-                 * Pipe generator yield to Iterator
-                 */
-                yield* adapter.getAnimals(true);
-            };
-        }
 
         // Call the Adapter method using GET.
         return async function* (): AsyncGenerator<AnimalMessage> {
             /**
              * Pipe generator yield to Iterator
              */
-            yield* adapter.getAnimals();
+            yield* adapter.getSecureAnimals();
         };
     }
 }
