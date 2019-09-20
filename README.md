@@ -248,7 +248,6 @@ A nice feature of the _Connector Pattern_ is that you can proxy one or more othe
 if `endpoint 𝒂` and `endpoint 𝒃`, you can create a connector which has requirements for `connector 𝒂` and `connector 𝒃`.
 
 ```typescript
-
 // Connector Response interfaces
 
 interface EnvironmentalData extends TapjawConnectorResponse {
@@ -265,13 +264,21 @@ interface GlobalEnvironmentalData extends TapjawConnectorResponse {
     global: GlobalData;
 }
 
-// Interfaces with a RESTful API
-class Connecter_𝒂 implements TapjawConnector {
+// Interface for Environmental data with a RESTful API
+class Connecter_𝒂 implements TapjawHttpConnector /* implements ContractConnector */ {
+    constructor() {
+        super('environmental.example.com');
+    }
+
     public getEnvironmentalData(): Promise<any> {}
 }
 
-// Interfaces with a SOAP API
-class Connecter_𝒃 implements TapjawConnector {
+// Interface for Global data via a RESTful API
+class Connecter_𝒃 implements TapjawHttpConnector /* implements ContractConnector */ {
+    constructor() {
+        super('global.example.com');
+    }
+
     public getGlobalData(): Promise<any> {}
 }
 
