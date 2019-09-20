@@ -122,7 +122,7 @@ $ yarn add --dev globby ts-node tslint typescript @types/node
 
 Crate the following directories in your `src/` directory:
 ```bash
-$ mkdir src/adapters src/connectors
+$ mkdir src/adapters src/connectors src/contracts
 ```
 
 Your project should now be ready to implement.
@@ -160,7 +160,7 @@ export default class Hello extends TapjawCommand {
         ...TapjawCommand.defaultFlags,
     };
 
-    // 4. Optionally add arguments
+    // 4. Optionally add arguments, please reference oclif for more details.
     static args = [];
 
     // ...
@@ -174,12 +174,118 @@ export default class Hello extends TapjawCommand {
 
     protected getAdapterCallback(args: TapjawCommandArgs, flags: TapjawCommandFlags): TapjawAdapterCallback {
         // 5. Your adapter and connector construction and initialisation.
+        // - Please refer to Connector and Adapter implementation below.
 
         // 6. Your callback on how the adapter should be invoked based on args and flags.
+        // - Please refer to getAdapterCallback() Callback below.
     }
 }
 ```
 
 ### Connector Implementation
 
+#### Single Connector
+
+The purpose of a connector is to allow an adapter to use different external API services, so for example some
+third party APIs will have a RESTful and SOAP API. The _Connector Pattern_ allows us to create a two
+implementations with the same method signatures for the adapter to use. The example below fleshes out the idea.
+
+```typescript
+
+// -- src/contracts/example-connector.ts
+
+interface AnimalResponse extends TapjawConnectorResponse {
+    name: string;
+}
+
+interface ExampleConnector {
+    getAnimals(): Promise<AnimalResponse>;
+}
+
+// -- src/connectors/example-animal-world-connector.ts
+
+class ExampleAnimalWorldConnector extends TapjawHttpConnector implements ExampleConnector {
+    constructor() {
+        super('animalworld.example.com', 80);
+    }
+
+    public getAnimals(): Promise<AnimalResponse> {
+        return new Promise();
+    }
+}
+
+// -- src/connectors/example-nature-connector.ts
+
+class ExampleNatureConnector extends TapjawHttpConnector implements ExampleConnector {
+    constructor() {
+        super('nature.example.com', 80);
+    }
+
+    public getAnimals(): Promise<AnimalResponse> {
+        return new Promise();
+    }
+}
+
+```
+
+#### Proxy Connector
+
+A nice feature of the _Connector Pattern_ is that you can proxy one or more other connectors, so for example
+if `endpoint 𝒂` and `endpoint 𝒃`, you can create a connector which has requirements for `connector 𝒂` and `connector 𝒃`.
+
+```typescript
+
+// Connector Response interfaces
+
+interface EnvironmentalData extends TapjawConnectorResponse {
+    // type definition
+}
+
+interface GlobalData extends TapjawConnectorResponse {
+    // type definition
+}
+
+interface GlobalEnvironmentalData extends TapjawConnectorResponse {
+    // type definition
+    enviromental: EnvironmentalData;
+    global: GlobalData;
+}
+
+// Interfaces with a RESTful API
+class Connecter_𝒂 implements TapjawConnector {
+    public getEnvironmentalData(): Promise<any> {}
+}
+
+// Interfaces with a SOAP API
+class Connecter_𝒃 implements TapjawConnector {
+    public getGlobalData(): Promise<any> {}
+}
+
+// Interfaces with both SOAP and RESTful API.
+class MyConnector implements TapjawConnector {
+    constructor(
+        readonly private connectorA: Connecter_𝒂,
+        readonly private connectorB: Connecter_𝒃
+    ) {}
+
+    public async getGlobalEnviromentalData(): Promise<GlobalEnvironmentalData> {
+        const enviromentalData = await this.connectorA.getEnvironmentalData();
+        const globalData = await this.connectorB.getGlobalData();
+
+        return {
+            enviromental: enviromentalData,
+            global: globalData
+        };
+    }
+}
+
+```
+
+Another great example of the _Connector Pattern_ is to create a `CacheConnector` that wraps an existing child connector and abstracts the caching of the response from the child connector. But in regards to the adapter
+which implements the `CacheConnector`, it has no awareness if the data was recieved from cache or the API.
+
+#### Connectors with authentication
+
 ### Adapter Implementation
+
+### getAdapterCallback() Callback
