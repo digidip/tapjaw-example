@@ -177,7 +177,7 @@ export default class Hello extends TapjawCommand {
         // - Please refer to Connector and Adapter implementation below.
 
         // 6. Your callback on how the adapter should be invoked based on args and flags.
-        // - Please refer to getAdapterCallback() Callback below.
+        // - Please refer to "getAdapterCallback() implementation" below.
     }
 }
 ```
@@ -343,7 +343,7 @@ Tapjaw Importer is shipped with the following wrappers:
 
 > If you require a custom wrapper, create a `src/authenticators/wrappers` directory in your project and create a new wrapper class which extends the `TapjawAuthenticationWrapper` interface. In most cases you will also need to create a new class which extends the `TapjawAuthenticator`.
 
-To inject security into your connector, you must doing the following changes to your preperation of connectors in your command.
+To inject security into your connector, you must doing the following changes to your connector and connect the necassary parts in your command.
 ```typescript
 
 class MyHttpConnector extends TapjawHttpConnector implements MyConnector {
@@ -354,20 +354,59 @@ class MyHttpConnector extends TapjawHttpConnector implements MyConnector {
     // ... connector implementation
 }
 
-const connector = new MyHttpConnector(
-    new ApplyAuthorizationHttpHeaderWrapper(
-        new BasicAuthAuthenticator('username', 'password')
-    )
+// Defined in the command ...
+const security = new ApplyAuthorizationHttpHeaderWrapper(
+    new BasicAuthAuthenticator('username', 'password')
 );
+
+const connector = new MyHttpConnector(security);
 ```
 
 ### Adapter Implementation
 
+The adapters primary responsbility is **to be the interface to your business layer**. In an adapter each `public` method _must_ return a generator which yields an instances of `TapjawMessage`.
 
+```typescript
+type TapjawAdapterCallback<T = TapjawMessage> = () => AsyncGenerator<T>;
 
-### getAdapterCallback() Callback
+// should be implemented like:
 
+class MyAdapter extends TapjawAdapter<MyAdapter, TapjawMessage> {
 
+    // ...
+
+    public async * getAnimals(): AsyncGenerator<TapjawMessage> {
+        yield new TapjawMessage('Animal', {});
+    }
+}
+```
+
+Internally how the adapter works should be completely hidden from the command
+
+#### getAdapterCallback() implementation
+
+The primary responsbility is the `TapjawCommand.getAdapterCallback()` is to provide a callback which can be used inside the `TajawIterator`. The callback should define which adapter `public` method should be called and provide the required method parameter data used by the adapter method.
+
+It is important that the callback yields from the adapter method as demostrated in the example below.
+
+```typescript
+protected getAdapterCallback(args: TapjawCommandArgs, flags: TapjawCommandFlags): TapjawAdapterCallback {
+    const adapter = new ExampleAdapter(new ExampleHttpConnector());
+
+    // Call the Adapter method using GET.
+    return async function* (): AsyncGenerator<AnimalMessage> {
+
+        // ... Use `args` or `flags` to provide paramters.
+
+        // ... validate or prepare other data used by the adapter method.
+
+        /**
+         * Pipe generator yield to Iterator
+         */
+        yield* adapter.getAnimals(/* parameters from args, flags or prepared data */);
+    };
+}
+```
 
 ### Override the TapjawMessage
 
