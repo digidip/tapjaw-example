@@ -184,11 +184,11 @@ export default class Hello extends TapjawCommand {
 
 ### Connector Implementation
 
+The purpose of a connector is to allow an adapter to use different external API services, so for example some third party APIs will have a RESTful and SOAP API. The _Connector Pattern_ allows us to create a two implementations with the same method signatures for the adapter to use. The developer then has the choice to switch between either connector and expect the adapter to operate seemlessly regardless of which connector is used.
+
 #### Single Connector
 
-The purpose of a connector is to allow an adapter to use different external API services, so for example some
-third party APIs will have a RESTful and SOAP API. The _Connector Pattern_ allows us to create a two
-implementations with the same method signatures for the adapter to use. The example below fleshes out the idea.
+The most basic implementation of af a connector is to communicate with a single third party API. The following example demostrates how to create one of these connectors:
 
 ```typescript
 
