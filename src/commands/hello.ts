@@ -1,4 +1,4 @@
-import { TapjawCommand, StdoutIterator } from 'tapjaw-importer';
+import { TapjawCommand } from 'tapjaw-importer';
 import ExampleAdapter, { AnimalMessage } from '../adapters/example-adapter';
 import { TapjawCommandArgs, TapjawCommandFlags } from 'tapjaw-importer/lib/contracts/tapjaw-command';
 import ExampleHttpConnector from '../connectors/example-http-connector';
@@ -45,11 +45,6 @@ $ bin/run hello --post
      * Provide your Adapter implementation which is to be used with this command.
      */
     protected adapter = new ExampleAdapter(new ExampleHttpConnector());
-
-    /**
-     * Provide an iterator on how to output the TapjawMessages which are yielded from the Adapter.
-     */
-    protected iterator = new StdoutIterator(process.stdout);
 
     /**
      * It's essential that this method returns a `async function *(): AsyncGenerator<TapjawMessage> {}` lambda function

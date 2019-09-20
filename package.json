@@ -52,11 +52,9 @@
   "repository": "digidip/example",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
-    "posttest": "tslint -p . -t stylish",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "test": "echo NO TESTS",
     "version": "oclif-dev readme && git add README.md",
-    "server": "node_modules/ts-node/dist/bin.js src/api/example-api.ts"
+    "server": "node_modules/ts-node/dist/bin.js api/example-api.ts"
   },
   "types": "lib/index.d.ts"
 }

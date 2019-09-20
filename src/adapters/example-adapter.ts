@@ -6,7 +6,7 @@ import ExampleHttpConnector, { ExampleResponse } from '../connectors/example-htt
  */
 export class AnimalMessage extends TapjawMessage {}
 
-export default class ExampleAdapter implements TapjawAdapter {
+export default class ExampleAdapter implements TapjawAdapter<ExampleAdapter, AnimalMessage> {
     /**
      * Provide the connector implementation the Adapter should use.
      *

@@ -1,4 +1,4 @@
-import { TapjawCommand, StdoutIterator, TapjawApplyAuthorizationHttpHeaderWrapper, TapjawBasicAuthenticator } from 'tapjaw-importer';
+import { TapjawCommand, TapjawApplyAuthorizationHttpHeaderWrapper, TapjawBasicAuthenticator } from 'tapjaw-importer';
 import ExampleAdapter, { AnimalMessage } from '../adapters/example-adapter';
 import { TapjawCommandArgs, TapjawCommandFlags } from 'tapjaw-importer/lib/contracts/tapjaw-command';
 import ExampleHttpConnector from '../connectors/example-http-connector';
@@ -50,11 +50,6 @@ $ bin/run hello-secure test test --limit=1
     instance = HelloSecure;
 
     /**
-     * Provide an iterator on how to output the TapjawMessages which are yielded from the Adapter.
-     */
-    protected iterator = new StdoutIterator(process.stdout);
-
-    /**
      * It's essential that this method returns a `async function *(): AsyncGenerator<TapjawMessage> {}` lambda function
      * which wraps the Adapter.method() call and must pipe the yield to the Iterator.
      *
@@ -64,9 +59,14 @@ $ bin/run hello-secure test test --limit=1
      */
     protected getAdapterCallback(args: TapjawCommandArgs, flags: TapjawCommandFlags): TapjawAdapterCallback {
         const { username, password } = args;
+
+        // Construct adapter in callback because we need to provide arguments to the Authenticator.
         const adapter = new ExampleAdapter(
+            // Connector which communicates with third party API.
             new ExampleHttpConnector(
+                // Wrapper to convert authentication data into HTTP headers
                 new TapjawApplyAuthorizationHttpHeaderWrapper(
+                    // Basic Authentication component
                     new TapjawBasicAuthenticator(username, password)
                 )
             )
