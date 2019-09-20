@@ -338,7 +338,7 @@ A wrapper's primary responsbility is to take the information recieved from `Tapj
 a HTTP request's header or URI with the necassary authentication token, api key or similar.
 
 Tapjaw Importer is shipped with the following wrappers:
-* Applying `Authorization: <token type>` to a HTTP request header (`ApplyAuthorizationHttpHeaderWrapper`)
+* Applying `Authorization: <auth type> <token>` to a HTTP request header (`ApplyAuthorizationHttpHeaderWrapper`)
 * Applying `Authorization: Bearer <oauth access token>` to a HTTP request header (`ApplyOauthAuthorizationHttpHeaderWrapper`)
 
 > If you require a custom wrapper, create a `src/authenticators/wrappers` directory in your project and create a new wrapper class which extends the `TapjawAuthenticationWrapper` interface. In most cases you will also need to create a new class which extends the `TapjawAuthenticator`.
