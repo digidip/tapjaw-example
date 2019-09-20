@@ -13,7 +13,7 @@
     "@oclif/plugin-help": "^2",
     "restify": "^8.4.0",
     "restify-errors": "^8.0.1",
-    "tapjaw-importer": "https://github.com/digidip/tapjaw-importer.git",
+    "tapjaw-importer": "https://github.com/digidip/tapjaw-importer.git#0.1.0",
     "tslib": "^1"
   },
   "devDependencies": {

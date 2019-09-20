@@ -3496,7 +3496,7 @@ taketalk@^1.0.0:
     get-stdin "^4.0.1"
     minimist "^1.1.0"
 
-"tapjaw-importer@https://github.com/digidip/tapjaw-importer.git":
+"tapjaw-importer@https://github.com/digidip/tapjaw-importer.git#0.1.0":
   version "0.1.0"
   resolved "https://github.com/digidip/tapjaw-importer.git#bf8750e2e8c3535ce5e2718289f94449a9f3a478"
   dependencies:
