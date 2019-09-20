@@ -279,13 +279,96 @@ class MyConnector implements TapjawConnector {
     }
 }
 
+const impl = new MyConnector(
+    new Connecter_𝒂(),
+    new Connecter_𝒃()
+)
+const response = impl.getGlobalEnviromentalData();
 ```
 
-Another great example of the _Connector Pattern_ is to create a `CacheConnector` that wraps an existing child connector and abstracts the caching of the response from the child connector. But in regards to the adapter
-which implements the `CacheConnector`, it has no awareness if the data was recieved from cache or the API.
+Another great example of the _Connector Pattern_ is to create a `CacheConnector` that wraps an existing child connector and abstracts away the caching of the response from the child connector. But in regards to the adapter
+which implements the `CacheConnector` or the child connector, it requires no awareness whether the data was recieved from cache or the API.
+
+```typescript
+class ChildConnector implements TapjawConnector {
+    public async getRecord(id: number): Promise<any> {}
+}
+
+class CacheConnector implements TapjawConnector {
+    constructor(
+        readonly private connector: ChildConnector,
+        readonly private cache: CacheInterface,
+    ) {}
+
+    public async getRecord(id: number): Promise<any> {
+        if (this.cache.has(/* cache key */)) {
+            return this.cache.get(/* cache key */);
+        }
+
+        const record = await this.connector.getRecord(id);
+        if (record) {
+            this.cache.put(/* cache key */, record);
+        }
+
+        return record;
+    }
+}
+
+const impl = new CacheConnector(new ChildConnector(), new Cache());
+const response = await impl.getRecord(123);
+```
 
 #### Connectors with authentication
 
+Connectors have the ability to handle various authentication methods, currently Tapjaw Importer ships
+with the following authenticators:
+* HTTP Basic Authentication (`BasicAuthAuthenticator`)
+* HTTP Bearer Authentication (`BearerAuthAuthenticator`)
+* OAuth 2.0 Authentication (`Oauth2AuthAuthenticator`)
+
+> If you require an alternative authenticator, you are able to manually implement your own by creating
+  a `src/authenticators` directory in your project and implement the `TapjawAuthenticator` interface.
+
+An authenticator's primary responsbility is to use provided credentials, to either create a token or communcicate with a third party authentication interface to retreieve session/access token data. The response provided from the `authenticate()` method
+should contain all the necassary data to be able to transform a connector request, into an authenticated request.
+
+The mediator between the connector's request mechanism and the `TapjawAuthenticator.authenticate()` requires a wrapper.
+
+A wrapper's primary responsbility is to take the information recieved from `TapjawAuthenticator.authenticate()` and update
+a HTTP request's header or URI with the necassary authentication token, api key or similar.
+
+Tapjaw Importer is shipped with the following wrappers:
+* Applying `Authorization: <token type>` to a HTTP request header (`ApplyAuthorizationHttpHeaderWrapper`)
+* Applying `Authorization: Bearer <oauth access token>` to a HTTP request header (`ApplyOauthAuthorizationHttpHeaderWrapper`)
+
+> If you require a custom wrapper, create a `src/authenticators/wrappers` directory in your project and create a new wrapper class which extends the `TapjawAuthenticationWrapper` interface. In most cases you will also need to create a new class which extends the `TapjawAuthenticator`.
+
+To inject security into your connector, you must doing the following changes to your preperation of connectors in your command.
+```typescript
+
+class MyHttpConnector extends TapjawHttpConnector implements MyConnector {
+    constructor(security: TapjawAuthenticationWrapper) {
+        super('host', 443, true, security);
+    }
+
+    // ... connector implementation
+}
+
+const connector = new MyHttpConnector(
+    new ApplyAuthorizationHttpHeaderWrapper(
+        new BasicAuthAuthenticator('username', 'password')
+    )
+);
+```
+
 ### Adapter Implementation
 
+
+
 ### getAdapterCallback() Callback
+
+
+
+### Override the TapjawMessage
+
+Generally a good practice is to create your own `TapjawMessage` class, which you can then overload the hashing mechanism or add extra functionality prior to transforming into JSON.
