@@ -1,23 +1,11 @@
 import { TapjawHttpConnector } from 'tapjaw-importer';
-import { TapjawConnectorResponse } from 'tapjaw-importer/lib/contracts/tapjaw-connector';
 import TapjawAuthenticationWrapper from 'tapjaw-importer/lib/contracts/tapjaw-authentication-wrapper';
-
-/**
- * The specification of each Animal entity in the ExampleResponse.data array.
- */
-export type AnimalObject = { type: string; };
-
-/**
- * The specification of the Example Response.
- */
-export interface ExampleResponse extends TapjawConnectorResponse {
-    data: AnimalObject[];
-}
+import ExampleConnector, { ExampleResponse } from '../contracts/example-connector';
 
 /**
  * A basic HTTP connector implementation of the example-api.ts webserver.
  */
-export default class ExampleHttpConnector extends TapjawHttpConnector {
+export default class ExampleHttpConnector extends TapjawHttpConnector implements ExampleConnector {
     /**
      * Disable gzip usage
      */
