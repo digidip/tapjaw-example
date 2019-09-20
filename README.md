@@ -3,7 +3,23 @@ Tapjaw example
 
 Example of the Tapjaw implementation
 
-## Install
+- [Tapjaw example](#tapjaw-example)
+- [Install](#install)
+- [Usage](#usage)
+- [Tutorial](#tutorial)
+  - [Setup new project](#setup-new-project)
+  - [Command Implementation](#command-implementation)
+    - [Setup class](#setup-class)
+    - [Setup methods and properties](#setup-methods-and-properties)
+  - [Connector Implementation](#connector-implementation)
+    - [Single Connector](#single-connector)
+    - [Proxy Connector](#proxy-connector)
+    - [Connectors with authentication](#connectors-with-authentication)
+  - [Adapter Implementation](#adapter-implementation)
+    - [getAdapterCallback() implementation](#getadaptercallback-implementation)
+  - [Override the TapjawMessage](#override-the-tapjawmessage)
+
+# Install
 
 Download the project.
 
@@ -24,7 +40,7 @@ Start example API server.
 $ yarn server
 ```
 
-## Usage
+# Usage
 
 To perform a basic GET request, execute:
 
@@ -74,11 +90,9 @@ get Animals (secure call)
 {"signature":"9caaef5435ad411ef97ccf5ed3107a36ade6d3420bfc3c9a4d267390cf058a3f","sourceProviderName":"animals","import_date":"2019-09-18T09:12:35.733Z","payload":{"type":"Ladybird"}}
 ```
 
-## Tutorial
+# Tutorial
 
-
-
-### Setup new project
+## Setup new project
 
 There are a number of prerequaists before you start, firstly make sure you have `yarn`, `npx` and `nodejs 10+` installed
 on your host system. You can find out how to do this by visiting the following pages:
@@ -127,13 +141,13 @@ $ mkdir src/adapters src/connectors src/contracts
 
 Your project should now be ready to implement.
 
-### Command Implementation
+## Command Implementation
 
 Now the fun starts, you need to either edit or create a new command in the projects `src/commands` directory.
 
 By default, OCLIF creates a `src/commands/hello.ts` class, so for this tutorial we'll use this class.
 
-#### Setup class
+### Setup class
 Change the the extended class from `Command` to `TapjawCommand` and implement the contracted properties and methods.
 
 ```typescript
@@ -142,7 +156,7 @@ export default class Hello extends TapjawCommand {
 }
 ```
 
-#### Setup methods and properties
+### Setup methods and properties
 
 Setup the properties:
 ```typescript
@@ -182,11 +196,11 @@ export default class Hello extends TapjawCommand {
 }
 ```
 
-### Connector Implementation
+## Connector Implementation
 
 The purpose of a connector is to allow an adapter to use different external API services, so for example some third party APIs will have a RESTful and SOAP API. The _Connector Pattern_ allows us to create a two implementations with the same method signatures for the adapter to use. The developer then has the choice to switch between either connector and expect the adapter to operate seemlessly regardless of which connector is used.
 
-#### Single Connector
+### Single Connector
 
 The most basic implementation of af a connector is to communicate with a single third party API. The following example demostrates how to create one of these connectors:
 
@@ -228,7 +242,7 @@ class ExampleNatureConnector extends TapjawHttpConnector implements ExampleConne
 
 ```
 
-#### Proxy Connector
+### Proxy Connector
 
 A nice feature of the _Connector Pattern_ is that you can proxy one or more other connectors, so for example
 if `endpoint 𝒂` and `endpoint 𝒃`, you can create a connector which has requirements for `connector 𝒂` and `connector 𝒃`.
@@ -318,7 +332,7 @@ const impl = new CacheConnector(new ChildConnector(), new Cache());
 const response = await impl.getRecord(123);
 ```
 
-#### Connectors with authentication
+### Connectors with authentication
 
 Connectors have the ability to handle various authentication methods, currently Tapjaw Importer ships
 with the following authenticators:
@@ -362,7 +376,7 @@ const security = new ApplyAuthorizationHttpHeaderWrapper(
 const connector = new MyHttpConnector(security);
 ```
 
-### Adapter Implementation
+## Adapter Implementation
 
 The adapters primary responsbility is **to be the interface to your business layer**. In an adapter each `public` method _must_ return a generator which yields an instances of `TapjawMessage`.
 
@@ -383,7 +397,7 @@ class MyAdapter extends TapjawAdapter<MyAdapter, TapjawMessage> {
 
 Internally how the adapter works should be completely hidden from the command
 
-#### getAdapterCallback() implementation
+### getAdapterCallback() implementation
 
 The primary responsbility is the `TapjawCommand.getAdapterCallback()` is to provide a callback which can be used inside the `TajawIterator`. The callback should define which adapter `public` method should be called and provide the required method parameter data used by the adapter method.
 
@@ -408,6 +422,6 @@ protected getAdapterCallback(args: TapjawCommandArgs, flags: TapjawCommandFlags)
 }
 ```
 
-### Override the TapjawMessage
+## Override the TapjawMessage
 
 Generally a good practice is to create your own `TapjawMessage` class, which you can then overload the hashing mechanism or add extra functionality prior to transforming into JSON.
