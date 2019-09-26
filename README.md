@@ -117,8 +117,11 @@ You will need to modify the parts of the oclif project to make it cleaner and re
 
 * You should update the `README.md` to reflect your project instead of the OCLIF `README.md` template.
 * Copy `https://github.com/digidip/tapjaw-example/blob/master/tslint.json` into your project.
+  * `wget https://raw.githubusercontent.com/digidip/tapjaw-example/master/tslint.json -O tslint.json`
 * Copy `https://github.com/digidip/tapjaw-example/blob/master/tsconfig.json` into your project.
+  * `wget https://raw.githubusercontent.com/digidip/tapjaw-example/master/tsconfig.json -O tsconfig.json`
 * (Optionally) Copy `https://github.com/digidip/tapjaw-example/blob/master/.editorconfig` into your project
+  * `wget https://raw.githubusercontent.com/digidip/tapjaw-example/master/.editorconfig -O .editorconfig`
 
 Change the directory to you project directory.
 ```bash
