@@ -4,6 +4,7 @@ import { TapjawCommandArgs, TapjawCommandFlags } from 'tapjaw-importer/lib/contr
 import ExampleHttpConnector from '../connectors/example-http-connector';
 import { flags } from '@oclif/command';
 import { TapjawAdapterCallback } from 'tapjaw-importer/lib/contracts/tapjaw-adapter';
+import exampleConfig from '../configs/example-config';
 
 export default class Hello extends TapjawCommand {
     /**
@@ -54,9 +55,11 @@ $ bin/run hello --post
      * @param flags TapjawCommandFlags
      * @yields AnimalMessage
      */
-    protected getAdapterCallback(args: TapjawCommandArgs, flags: TapjawCommandFlags): TapjawAdapterCallback {
+    protected getAdapterCallback(args: TapjawCommandArgs, flags: TapjawCommandFlags): TapjawAdapterCallback<AnimalMessage> {
         const adapter = this.adapter;
         const { post } = flags;
+
+        this.log(`Example Config: my_arg = ${exampleConfig.getConfig('my_arg')}.`);
 
         if (post) {
             // Call the Adapter method using POST.

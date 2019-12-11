@@ -11,9 +11,10 @@
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/plugin-help": "^2",
+    "dotenv": "^8.0.0",
     "restify": "^8.4.0",
     "restify-errors": "^8.0.1",
-    "tapjaw-importer": "https://github.com/digidip/tapjaw-importer.git#semver:^0.1.0",
+    "tapjaw-importer": "https://github.com/digidip/tapjaw-importer.git#semver:^0.2.0",
     "tslib": "^1",
     "typescript": "^3.7"
   },
