@@ -16,9 +16,13 @@ Example of the Tapjaw implementation
     - [Single Connector](#single-connector)
     - [Proxy Connector](#proxy-connector)
     - [Connectors with authentication](#connectors-with-authentication)
+      - [New helper methods with TapjawImporter 0.2.0](#new-helper-methods-with-tapjawimporter-020)
   - [Adapter Implementation](#adapter-implementation)
-    - [getAdapterCallback() implementation](#getadaptercallback-implementation)
-  - [Override the TapjawMessage](#override-the-tapjawmessage)
+    - [TapjawAdapter.getAdapterCallback() implementation](#tapjawadaptergetadaptercallback-implementation)
+  - [Configurations](#configurations)
+    - [TapjawMessageConfig](#tapjawmessageconfig)
+    - [Creating your own configuration](#creating-your-own-configuration)
+  - [Overriding the TapjawMessage](#overriding-the-tapjawmessage)
 
 # Install
 
@@ -105,15 +109,13 @@ Please refer to the [TapjawGenerator](https://www.npmjs.com/package/generator-ta
 
 Now the fun starts, you need to either edit or create a new command in the projects `src/commands` directory.
 
-By default, OCLIF creates a `src/commands/hello.ts` class, so for this tutorial we'll use this class.
+By default, we've created a `src/commands/hello.ts` class, so for this tutorial we'll use this class.
 
 ### Setup class
-Change the the extended class from `Command` to `TapjawCommand` and implement the contracted properties and methods.
 
-```typescript
-export default class Hello extends TapjawCommand {
-    // ...
-}
+Use the [TapjawGenerator](https://www.npmjs.com/package/generator-tapjaw) to create a new command with:
+```bash
+~/tapjaw-example %> yo tapjaw:command
 ```
 
 ### Setup methods and properties
@@ -159,6 +161,11 @@ export default class Hello extends TapjawCommand {
 ## Connector Implementation
 
 The purpose of a connector is to allow an adapter to use different external API services, so for example some third party APIs will have a RESTful and SOAP API. The _Connector Pattern_ allows us to create a two implementations with the same method signatures for the adapter to use. The developer then has the choice to switch between either connector and expect the adapter to operate seemlessly regardless of which connector is used.
+
+Use the [TapjawGenerator](https://www.npmjs.com/package/generator-tapjaw) to create a new connector with:
+```bash
+~/tapjaw-example %> yo tapjaw:connector
+```
 
 ### Single Connector
 
@@ -301,7 +308,7 @@ const response = await impl.getRecord(123);
 
 ### Connectors with authentication
 
-Connectors have the ability to handle various authentication methods, currently Tapjaw Importer ships
+Connectors have the ability to handle various authentication approaches, currently Tapjaw Importer ships
 with the following authenticators:
 * HTTP Basic Authentication (`BasicAuthAuthenticator`)
 * HTTP Bearer Authentication (`BearerAuthAuthenticator`)
@@ -326,6 +333,7 @@ Tapjaw Importer is shipped with the following wrappers:
 
 To inject security into your connector, you must doing the following changes to your connector and connect the necassary parts in your command.
 ```typescript
+import { ApplyAuthorizationHttpHeaderWrapper, BasicAuthAuthenticator } from 'tapjaw-importer'; // WARNING: This approach will be deprecated in v0.3.0.
 
 class MyHttpConnector extends TapjawHttpConnector implements MyConnector {
     constructor(security: TapjawAuthenticationWrapper) {
@@ -343,9 +351,57 @@ const security = new ApplyAuthorizationHttpHeaderWrapper(
 const connector = new MyHttpConnector(security);
 ```
 
+#### New helper methods with TapjawImporter 0.2.0
+
+Due to the verbose approach towards implementing the Wrapper and Authenticator, three new helper methods have been added to the TapjawImporter interface, the following example will give you an understanding how to use them.
+
+```typescript
+
+import { createBasicSecurity, createBearerSecurity, createOAuthSecurity } from 'tapjaw-importer';
+
+class MyHttpConnector extends TapjawHttpConnector implements MyConnector {
+    constructor(security: TapjawAuthenticationWrapper) {
+        // Basic Auth
+        super('host', 443, true, security || createBasicSecurity('user', 'pass'));
+
+        // Bearer Auth
+        super('host', 443, true, security || createBearerSecurity('token'));
+
+        // OAuth
+        super(
+            'host',
+            443,
+            true,
+            security || createOAuthSecurity(
+                'clientId',
+                'clientSecret',
+                'hostname',
+                'path',
+                'postParams',
+                'method',
+                'responseEncoding'
+            )
+        );
+    }
+
+    // ... connector implementation
+}
+```
+
+These new methods simply wrap the `new Wrapper(new Authenticator())` approach into an easy to use approach.
+
+> **Deprecation Note**: *In TapjawImporter v0.3.0, the wrappers and authenticators will be removed from TapjawImporter's index interface, as it will not longer be the recommended approach. Although you will still be able to use them by referencing the files directly in TapjawImporter project tree.*
+
 ## Adapter Implementation
 
-The adapters primary responsbility is **to be the interface to your business layer**. In an adapter each `public` method _must_ return a generator which yields an instances of `TapjawMessage`.
+The adapters primary responsbility is **to be the interface to your business domain**. In an adapter each `public` method _must_ return a generator which yields an instances of `TapjawMessage`.
+
+Use the [TapjawGenerator](https://www.npmjs.com/package/generator-tapjaw) to create a new adapter class with:
+```bash
+~/tapjaw-example %> yo tapjaw:adapter
+```
+
+> **Note**: *If you create your connectors before the adapter, the adapter generator will automatically allow you to select an existing connector that the adapter should implement.*
 
 ```typescript
 type TapjawAdapterCallback<T = TapjawMessage> = () => AsyncGenerator<T>;
@@ -362,33 +418,85 @@ class MyAdapter extends TapjawAdapter<MyAdapter, TapjawMessage> {
 }
 ```
 
-Internally how the adapter works should be completely hidden from the command
+Fundementally, the adapter should be completely independany from the command, the command should only call upon the Adapter to provide the necassary arguments to complex it's task.
 
-### getAdapterCallback() implementation
+### TapjawAdapter.getAdapterCallback() implementation
 
 The primary responsbility is the `TapjawCommand.getAdapterCallback()` is to provide a callback which can be used inside the `TajawIterator`. The callback should define which adapter `public` method should be called and provide the required method parameter data used by the adapter method.
 
 It is important that the callback yields from the adapter method as demostrated in the example below.
 
 ```typescript
-protected getAdapterCallback(args: TapjawCommandArgs, flags: TapjawCommandFlags): TapjawAdapterCallback {
-    const adapter = new ExampleAdapter(new ExampleHttpConnector());
+export default class Hello extends TapjawCommand {
+    // ...
 
-    // Call the Adapter method using GET.
-    return async function* (): AsyncGenerator<AnimalMessage> {
+    protected getAdapterCallback(args: TapjawCommandArgs, flags: TapjawCommandFlags): TapjawAdapterCallback {
+        const adapter = new ExampleAdapter(new ExampleHttpConnector());
 
-        // ... Use `args` or `flags` to provide paramters.
+        // Call the Adapter method using GET.
+        return async function* (): AsyncGenerator<AnimalMessage> {
 
-        // ... validate or prepare other data used by the adapter method.
+            // ... Use `args` or `flags` to provide paramters.
 
-        /**
-         * Pipe generator yield to Iterator
-         */
-        yield* adapter.getAnimals(/* parameters from args, flags or prepared data */);
-    };
+            // ... validate or prepare other data used by the adapter method.
+
+            /**
+             * Pipe generator yield to Iterator
+             */
+            yield* adapter.getAnimals(/* parameters from args, flags or prepared data */);
+        };
+    }
+
+    // ...
 }
 ```
 
-## Override the TapjawMessage
+## Configurations
+
+Generally it's good practice to put connector credentials or general mutable command configurations into the TapjawImporter's configuration system. To get a rough idea take a look at `src/configs/example-config.ts` and `.env`. You will see that `EXAMPLE_` is a prefix that exists against every `ExampleConfig` configuration in the `.env`:
+```env
+EXAMPLE_MY_ARG=Tapjaw Example
+```
+When you run `$> bin/run hello` it will output `Example Config: my_arg = Tapjaw Example.`, which is derived from the above configuration.
+
+
+### TapjawMessageConfig
+
+By default TapjawImporter is shipped with `TapjawMessageConfig`, with the default configuration in the `.env` being:
+```env
+TAPJAW_MESSAGE_SECRET=example secret
+```
+
+If you wish to salt your `TapjawMessage` signature, simply change the `TAPJAW_MESSAGE_SECRET` value to your desired secret.
+
+
+### Creating your own configuration
+
+Use the [TapjawGenerator](https://www.npmjs.com/package/generator-tapjaw) to create a new configuration instance with:
+```bash
+~/tapjaw-example %> yo tapjaw:config
+```
+
+You will be asked to provide a prefix/namespace for your new configurations, it will also ask if you wish to setup a number of key/value pairs using the newly created prefix/namespace.
+
+If you do not have a `.env` file in your project, the generator will automatically create you a new one with all your newly configured variables. If `.env` already exists, the new configuration variables will be appended to the file.
+
+Once you've created a new configuration instance, you simply need to import the file into your project file:
+```typescript
+import myDataConfig from 'src/configs/my-data-config.ts'; // Uses prefix: "MY_DATA_"
+
+// Get a value from MY_DATA_NAME=moo
+myDataConfig.getConfig('name'); // will return "moo"
+```
+
+## Overriding the TapjawMessage
 
 Generally a good practice is to create your own `TapjawMessage` class, which you can then overload the hashing mechanism or add extra functionality prior to transforming into JSON.
+
+To make this easy use the [TapjawGenerator](https://www.npmjs.com/package/generator-tapjaw) to create a new message type with:
+```bash
+~/tapjaw-example %> yo tapjaw:message
+```
+
+Once you have generated a new message type, you can now start to use this in your Adapters instead of the `TapjawMessage`.
+
