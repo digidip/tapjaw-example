@@ -1,7 +1,7 @@
 {
   "name": "example",
   "description": "Example of the Tapjaw implementation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Jeramy Wenserit",
   "bin": {
     "example": "./bin/run"
