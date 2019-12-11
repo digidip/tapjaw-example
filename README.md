@@ -6,6 +6,7 @@ Example of the Tapjaw implementation
 - [Tapjaw example](#tapjaw-example)
 - [Install](#install)
 - [Usage](#usage)
+- [Extending the example with the TapjawGenerator](#extending-the-example-with-the-tapjawgenerator)
 - [Tutorial](#tutorial)
   - [Setup new project](#setup-new-project)
   - [Command Implementation](#command-implementation)
@@ -89,6 +90,10 @@ get Animals (secure call)
 {"signature":"47b9e7f65611be13ea7df2476eb53036eddcbdf4c344eb7474076bca7d4601cd","sourceProviderName":"animals","import_date":"2019-09-18T09:12:35.733Z","payload":{"type":"Wasp"}}
 {"signature":"9caaef5435ad411ef97ccf5ed3107a36ade6d3420bfc3c9a4d267390cf058a3f","sourceProviderName":"animals","import_date":"2019-09-18T09:12:35.733Z","payload":{"type":"Ladybird"}}
 ```
+
+# Extending the example with the TapjawGenerator
+
+If you wish to experiment with this example, consider using the [TapjawGenerator](https://www.npmjs.com/package/generator-tapjaw) to add configs, connectors, adapters, commands or message contracts the current project.
 
 # Tutorial
 
