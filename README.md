@@ -499,4 +499,3 @@ To make this easy use the [TapjawGenerator](https://www.npmjs.com/package/genera
 ```
 
 Once you have generated a new message type, you can now start to use this in your Adapters instead of the `TapjawMessage`.
-
