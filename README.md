@@ -93,61 +93,13 @@ get Animals (secure call)
 
 # Extending the example with the TapjawGenerator
 
-If you wish to experiment with this example, consider using the [TapjawGenerator](https://www.npmjs.com/package/generator-tapjaw) to add configs, connectors, adapters, commands or message contracts the current project.
+If you wish to experiment with this example, consider using the [TapjawGenerator](https://www.npmjs.com/package/generator-tapjaw) to add configs, connectors, adapters, commands or message contracts to the current project.
 
 # Tutorial
 
 ## Setup new project
 
-There are a number of prerequaists before you start, firstly make sure you have `yarn`, `npx` and `nodejs 10+` installed
-on your host system. You can find out how to do this by visiting the following pages:
-
-* [yarn](https://yarnpkg.com/en/docs/install)
-* [npx](https://www.npmjs.com/package/npx)
-* [nodejs](https://nodejs.org/en/)
-
-Since Tapjaw relies heavily on [oclif](https://github.com/oclif/oclif) for the command infrastructure,
-you must execute the OCLIF builder to create a multi command project, so lets get started!
-
-Firstly execute:
-```bash
-$ npx oclif multi <name of your project>
-```
-
-OCLIF will ask you a number of questions about creating the command project, please make sure you enable the `yarn` and `typescript` implemetations.
-
-> The following OCLIF steps will be replaced in a later version of Tapjaw, unfortuantly it's manual process for now.
-
-You will need to modify the parts of the oclif project to make it cleaner and reduce issues.
-
-* You should update the `README.md` to reflect your project instead of the OCLIF `README.md` template.
-* Copy `https://github.com/digidip/tapjaw-example/blob/master/tslint.json` into your project.
-  * `wget https://raw.githubusercontent.com/digidip/tapjaw-example/master/tslint.json -O tslint.json`
-* Copy `https://github.com/digidip/tapjaw-example/blob/master/tsconfig.json` into your project.
-  * `wget https://raw.githubusercontent.com/digidip/tapjaw-example/master/tsconfig.json -O tsconfig.json`
-* (Optionally) Copy `https://github.com/digidip/tapjaw-example/blob/master/.editorconfig` into your project
-  * `wget https://raw.githubusercontent.com/digidip/tapjaw-example/master/.editorconfig -O .editorconfig`
-
-Change the directory to you project directory.
-```bash
-$ cd <name of your project>
-```
-
-Execute the following `yarn` dependancies:
-```bash
-$ yarn add https://github.com/digidip/tapjaw-importer.git#0.1.0 tslib
-```
-
-```bash
-$ yarn add --dev globby ts-node tslint typescript @types/node
-```
-
-Crate the following directories in your `src/` directory:
-```bash
-$ mkdir src/adapters src/connectors src/contracts
-```
-
-Your project should now be ready to implement.
+Please refer to the [TapjawGenerator](https://www.npmjs.com/package/generator-tapjaw) for further instructions.
 
 ## Command Implementation
 
