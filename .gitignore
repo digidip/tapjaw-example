@@ -6,3 +6,11 @@
 /package-lock.json
 /tmp
 node_modules
+*.json
+!package.json
+!tsconfig.json
+!.prettierrc.json
+.env
+tsconfig.tsbuildinfo
+coverage/
+.DS_Store
