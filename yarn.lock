@@ -3561,7 +3561,7 @@ table@^6.0.9:
 
 "tapjaw-importer@https://github.com/digidip/tapjaw-importer.git#modernisation":
   version "2.0.0-rc1"
-  resolved "https://github.com/digidip/tapjaw-importer.git#b0ee29277ad3b961023b37e0c4024bf76dd4728c"
+  resolved "https://github.com/digidip/tapjaw-importer.git#51f53b70155760b07d692e593fd2d41c082e0fb2"
   dependencies:
     axios "^0.24"
     axios-cookiejar-support "^2"

@@ -1,5 +1,3 @@
-import { TapjawAdapterCallback } from 'tapjaw-importer/lib/contracts/tapjaw-adapter';
-import { TapjawCommandArgs } from 'tapjaw-importer/lib/contracts/tapjaw-command';
 import commander from 'commander';
 import displayExample from '../../modules/commander/display-example';
 import { Adapters } from '../../dependency-injection/types';
@@ -8,6 +6,7 @@ import TapjawExampleAdapter from '../../adapters/tapjaw-example-adapter';
 import ExampleTapjawMessage from '../../contracts/messages/example-tapjaw-message';
 import TapjawApiCommand from 'tapjaw-importer/lib/contracts/commands/tapjaw-api-command';
 import BaseCommandFlags from '../../contracts/base-command-flags';
+import { TapjawAdapterCallback, TapjawCommandArgs } from 'tapjaw-importer';
 
 interface TapjawExampleOptions extends BaseCommandFlags {
     limit: string;
