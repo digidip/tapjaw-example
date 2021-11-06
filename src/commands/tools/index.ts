@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import Hello from './hello';
+import NonReflectHello from './non-reflect-hello';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default (program: Command): void => {
@@ -8,4 +9,5 @@ export default (program: Command): void => {
     tools.description('Execute a tool command');
 
     Hello.register(tools);
+    NonReflectHello.register(tools);
 };
