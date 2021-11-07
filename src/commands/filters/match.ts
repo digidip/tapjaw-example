@@ -1,6 +1,12 @@
-import { Argument, Command } from 'commander';
-import { TapjawCommandArgs, TapjawCommandFlags, TapjawFilterCommand, TapjawMessage } from 'tapjaw-importer';
-import displayExample from '../../modules/commander/display-example';
+import { Argument } from 'commander';
+import {
+    TapjawCommandArgs,
+    TapjawCommandFlags,
+    TapjawFilterCommand,
+    TapjawMessage,
+    TapjawMetadata,
+} from 'tapjaw-importer';
+import jp from 'jsonpath';
 
 interface MatchOptions extends TapjawCommandFlags<string | boolean> {
     limit: string;
@@ -8,41 +14,48 @@ interface MatchOptions extends TapjawCommandFlags<string | boolean> {
     end: boolean;
 }
 
-export default class Match extends TapjawFilterCommand<MatchOptions, TapjawMessage> {
-    static register(program: Command): void {
-        program
-            .command(`match`)
-            .addArgument(new Argument('property', 'The TapjawMessage property to match (jsonpath)'))
-            .addArgument(new Argument('matches', 'The property value that should be matched'))
-            .description('Filter only messages where a property matches a specified value.')
-            .storeOptionsAsProperties(false)
-            .option('-l, --limit', 'Limit the number of messages emitted to STDOUT')
-            .option('-s, --start', 'Only match the start of the propery value', false)
-            .option('-s, --end', 'Only match the end of the propery value', false)
-            .on('--help', () => displayExample('$ bin/run filter match signature 1234567890 --start'))
-            .action(async (property: string, matches: string, options: MatchOptions) => {
-                try {
-                    await new Match(process.stdin, process.stdout, false).run(
-                        {
-                            property,
-                            matches,
-                        },
-                        options
-                    );
-                } catch (error) {
-                    Match.getLogger().error(String(error));
-                }
-            });
+@TapjawMetadata.Command.Name('match')
+@TapjawMetadata.Command.Description('Filter only messages where a property matches a specified value.')
+@TapjawMetadata.Command.Example('$ bin/run filter match signature 1234567890 --start')
+@TapjawMetadata.Command.Arguments(
+    new Argument('property', 'Property name of the TapjawMessage to compare against (jsonpath)'),
+    new Argument('matches', 'The property value that should be matched')
+)
+@TapjawMetadata.Command.Options(
+    {
+        flags: '-s, --start',
+        defaultValue: false,
+        description: 'Only match the start of the propery value',
+    },
+    {
+        flags: '-s, --end',
+        defaultValue: false,
+        description: 'Only match the end of the propery value',
     }
-
+)
+@TapjawMetadata.Command.Action(async (property: string, matches: string, options: MatchOptions) => {
+    try {
+        await new Match(process.stdin, process.stdout, false).run(
+            {
+                property,
+                matches,
+            },
+            options
+        );
+    } catch (error) {
+        Match.getLogger().error(String(error));
+    }
+})
+export default class Match extends TapjawFilterCommand<MatchOptions, TapjawMessage> {
     protected async onMessageFilter(
         message: TapjawMessage,
         { property, matches }: TapjawCommandArgs<string>,
         { start, end }: MatchOptions
     ): Promise<TapjawMessage | null> {
-        if (property in message) {
-            const value = String(message[property as keyof TapjawMessage]);
+        const result = jp.query(message, property);
 
+        if (Array.isArray(result) && result.length > 0) {
+            const value = result.shift() as string;
             if (start && value.startsWith(matches)) {
                 return Promise.resolve(message);
             } else if (end && value.endsWith(matches)) {
