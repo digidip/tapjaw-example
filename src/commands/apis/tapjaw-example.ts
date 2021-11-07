@@ -12,7 +12,7 @@ interface TapjawExampleOptions extends BaseCommandFlags {
 
 @TapjawMetadata.Command.Name('tapjaw-example')
 @TapjawMetadata.Command.Description('TapjawExample API Command')
-@TapjawMetadata.Command.Example('$ bin/importer apis tapjaw-exampe MyCaption -i uuid')
+@TapjawMetadata.Command.Example('$ bin/importer apis tapjaw-example MyCaption -i uuid')
 @TapjawMetadata.Command.Action(async (options: TapjawExampleOptions): Promise<void> => {
     try {
         await new TapjawExample(mmtContainer.get<TapjawExampleAdapter>(Adapters.TapjawExampleAdapter)).run({}, options);
