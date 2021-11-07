@@ -1,18 +1,18 @@
 import { Argument } from 'commander';
 import mmtContainer from '../../dependency-injection';
 import { ThirdParty } from '../../dependency-injection/types';
-import { TapjawCommand, TapjawCommandArgs, TapjawToolCommand } from 'tapjaw-importer';
+import { TapjawCommandArgs, TapjawMetadata, TapjawToolCommand } from 'tapjaw-importer';
 import BaseCommandFlags from '../../contracts/base-command-flags';
 
 interface HelloOptions extends BaseCommandFlags {
     name: string;
 }
 
-@TapjawCommand.Name('hello')
-@TapjawCommand.Description('A hello demo command')
-@TapjawCommand.Arguments(new Argument('caption', 'A simple caption'))
-@TapjawCommand.Example('$ bin/run tools hello "My super caption" --name="Sasha"')
-@TapjawCommand.Action(async (caption: string, options: HelloOptions) => {
+@TapjawMetadata.Command.Name('hello')
+@TapjawMetadata.Command.Description('A hello demo command')
+@TapjawMetadata.Command.Arguments(new Argument('caption', 'A simple caption'))
+@TapjawMetadata.Command.Example('$ bin/run tools hello "My super caption" --name="Sasha"')
+@TapjawMetadata.Command.Action(async (caption: string, options: HelloOptions): Promise<void> => {
     try {
         // @Note Perform light validation prior to running .run().
         await new Hello(mmtContainer.get<NodeJS.WritableStream>(ThirdParty.StdoutStream)).run(
@@ -23,7 +23,7 @@ interface HelloOptions extends BaseCommandFlags {
         Hello.getLogger().error(String(error));
     }
 })
-@TapjawCommand.Options({
+@TapjawMetadata.Command.Options({
     flags: '-n, --name <string>',
     description: 'Add a name to the message',
 })

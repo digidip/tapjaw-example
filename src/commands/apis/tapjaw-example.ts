@@ -3,19 +3,17 @@ import mmtContainer from '../../dependency-injection';
 import TapjawExampleAdapter from '../../adapters/tapjaw-example-adapter';
 import ExampleTapjawMessage from '../../contracts/messages/example-tapjaw-message';
 import BaseCommandFlags from '../../contracts/base-command-flags';
-import { TapjawAdapterCallback, TapjawCommand, TapjawCommandArgs } from 'tapjaw-importer';
+import { TapjawAdapterCallback, TapjawCommandArgs, TapjawMetadata } from 'tapjaw-importer';
 import BaseApiCommand from '../../contracts/base-api-command';
-import { Argument } from 'commander';
 
 interface TapjawExampleOptions extends BaseCommandFlags {
     limit: string;
 }
 
-@TapjawCommand.Name('tapjaw-example')
-@TapjawCommand.Description('TapjawExample API Command')
-@TapjawCommand.Example('$ bin/importer apis tapjaw-exampe MyCaption -i uuid')
-@TapjawCommand.Arguments(new Argument('caption', 'A simple caption'))
-@TapjawCommand.Action(async (caption: string, options: TapjawExampleOptions): Promise<void> => {
+@TapjawMetadata.Command.Name('tapjaw-example')
+@TapjawMetadata.Command.Description('TapjawExample API Command')
+@TapjawMetadata.Command.Example('$ bin/importer apis tapjaw-exampe MyCaption -i uuid')
+@TapjawMetadata.Command.Action(async (options: TapjawExampleOptions): Promise<void> => {
     try {
         await new TapjawExample(mmtContainer.get<TapjawExampleAdapter>(Adapters.TapjawExampleAdapter)).run({}, options);
     } catch (error) {
