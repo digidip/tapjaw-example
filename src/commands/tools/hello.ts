@@ -1,7 +1,7 @@
 import { Argument } from 'commander';
 import mmtContainer from '../../dependency-injection';
 import { ThirdParty } from '../../dependency-injection/types';
-import { TapjawCommandArgs, TapjawMetadata, TapjawToolCommand } from 'tapjaw-importer';
+import { TapjawCommand, TapjawMetadata } from 'tapjaw-importer';
 import BaseCommandFlags from '../../contracts/base-command-flags';
 
 interface HelloOptions extends BaseCommandFlags {
@@ -16,7 +16,7 @@ interface HelloOptions extends BaseCommandFlags {
     try {
         // @Note Perform light validation prior to running .run().
         await new Hello(mmtContainer.get<NodeJS.WritableStream>(ThirdParty.StdoutStream)).run(
-            { caption } as TapjawCommandArgs<string>,
+            { caption } as TapjawCommand.TapjawCommandArgs<string>,
             options
         );
     } catch (error) {
@@ -27,12 +27,12 @@ interface HelloOptions extends BaseCommandFlags {
     flags: '-n, --name <string>',
     description: 'Add a name to the message',
 })
-export default class Hello extends TapjawToolCommand<HelloOptions> {
+export default class Hello extends TapjawCommand.TapjawToolCommand<HelloOptions> {
     constructor(private readonly stdout: NodeJS.WritableStream) {
         super();
     }
 
-    async run({ caption }: TapjawCommandArgs<string>, { name }: HelloOptions): Promise<void> {
+    async run({ caption }: TapjawCommand.TapjawCommandArgs<string>, { name }: HelloOptions): Promise<void> {
         // @Note Perform more indepth, possibly context specific validation of in coming
         //       arguments and options.
         this.stdout.write('Hello World...');

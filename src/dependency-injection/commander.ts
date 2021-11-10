@@ -1,5 +1,5 @@
 import { Container, interfaces } from 'inversify';
-import { RateLimitedStdoutIterator } from 'tapjaw-importer';
+import { TapjawIterator } from 'tapjaw-importer';
 import { Configs, Iterators, ThirdParty } from './types';
 
 export default (mmtContainer: Container): void => {
@@ -7,10 +7,12 @@ export default (mmtContainer: Container): void => {
     const { StdoutStream } = ThirdParty;
     const { RateLimitedStdout: ConfgRateLimitedStdout } = Configs;
 
-    mmtContainer.bind<RateLimitedStdoutIterator>(RateLimitedStdout).toDynamicValue((context: interfaces.Context) => {
-        return new RateLimitedStdoutIterator(
-            context.container.get<NodeJS.WritableStream>(StdoutStream),
-            context.container.get<number>(ConfgRateLimitedStdout.PipedMessagesPerMinute)
-        );
-    });
+    mmtContainer
+        .bind<TapjawIterator.RateLimitedStdoutIterator>(RateLimitedStdout)
+        .toDynamicValue((context: interfaces.Context) => {
+            return new TapjawIterator.RateLimitedStdoutIterator(
+                context.container.get<NodeJS.WritableStream>(StdoutStream),
+                context.container.get<number>(ConfgRateLimitedStdout.PipedMessagesPerMinute)
+            );
+        });
 };

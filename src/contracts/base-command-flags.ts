@@ -1,5 +1,5 @@
-import { TapjawCommandFlags } from 'tapjaw-importer';
+import { TapjawCommand } from 'tapjaw-importer';
 
-export default interface BaseCommandFlags<T = string> extends TapjawCommandFlags<T> {
+export default interface BaseCommandFlags<T = string> extends TapjawCommand.TapjawCommandFlags<T> {
     importId: T;
 }

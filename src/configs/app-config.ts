@@ -1,7 +1,7 @@
 import './index';
-import { DotEnvConfig } from 'tapjaw-importer';
+import { TapjawConfig } from 'tapjaw-importer';
 
-class AppConfig extends DotEnvConfig {
+class AppConfig extends TapjawConfig.DotEnvConfig {
     constructor() {
         super('MMT Application Config', 'APP_');
     }

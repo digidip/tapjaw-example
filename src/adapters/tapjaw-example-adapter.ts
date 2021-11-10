@@ -1,11 +1,13 @@
-import { TapjawAdapter, sortObjectArrays, AdapterError } from 'tapjaw-importer';
+import { TapjawContract, TapjawError, TapjawMessage } from 'tapjaw-importer';
 import { injectable, inject } from 'inversify';
 import ExampleTapjawMessage from '../contracts/messages/example-tapjaw-message';
 import TapjawExampleConnector from '../contracts/connectors/tapjaw-example-connector';
 import { Connectors } from '../dependency-injection/types';
 
 @injectable()
-export default class TapjawExampleAdapter implements TapjawAdapter<TapjawExampleAdapter, ExampleTapjawMessage> {
+export default class TapjawExampleAdapter
+    implements TapjawContract.TapjawAdapter<TapjawExampleAdapter, ExampleTapjawMessage>
+{
     /**
      * Provide the connector implementation the Adapter should use.
      */
@@ -20,7 +22,7 @@ export default class TapjawExampleAdapter implements TapjawAdapter<TapjawExample
             const apiResponse = await this.connector.getNames();
 
             if (apiResponse.length === 0) {
-                throw new AdapterError('empty response', this);
+                throw new TapjawError.TapjawAdapterError('empty response', this);
             }
 
             /**
@@ -33,7 +35,11 @@ export default class TapjawExampleAdapter implements TapjawAdapter<TapjawExample
                  * sortObjectArrays() will sort any internal array properties to prevent signature corruption.
                  */
                 try {
-                    yield new ExampleTapjawMessage(importId || 'n/a', 'tapjaw-example', sortObjectArrays(payload));
+                    yield new ExampleTapjawMessage(
+                        importId || 'n/a',
+                        'tapjaw-example',
+                        TapjawMessage.sortObjectArrays(payload)
+                    );
                 } catch (error) {
                     console.error(error);
                 }

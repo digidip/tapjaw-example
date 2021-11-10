@@ -3,7 +3,7 @@ import mmtContainer from '../../dependency-injection';
 import TapjawExampleAdapter from '../../adapters/tapjaw-example-adapter';
 import ExampleTapjawMessage from '../../contracts/messages/example-tapjaw-message';
 import BaseCommandFlags from '../../contracts/base-command-flags';
-import { TapjawAdapterCallback, TapjawCommandArgs, TapjawMetadata } from 'tapjaw-importer';
+import { TapjawCommand, TapjawContract, TapjawMetadata } from 'tapjaw-importer'; // TapjawAdapterCallback, TapjawCommandArgs,
 import BaseApiCommand from '../../contracts/base-api-command';
 
 interface TapjawExampleOptions extends BaseCommandFlags {
@@ -34,9 +34,9 @@ export default class TapjawExample extends BaseApiCommand {
      * @yields AnimalMessage
      */
     protected getAdapterCallback(
-        args: TapjawCommandArgs<string>,
+        args: TapjawCommand.TapjawCommandArgs<string>,
         { importId }: TapjawExampleOptions
-    ): TapjawAdapterCallback<ExampleTapjawMessage> {
+    ): TapjawContract.TapjawAdapterCallback<ExampleTapjawMessage> {
         const adapter = this.adapter;
 
         return async function* (): AsyncGenerator<ExampleTapjawMessage> {

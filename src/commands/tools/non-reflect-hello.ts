@@ -2,14 +2,14 @@ import { Argument, Command } from 'commander';
 import mmtContainer from '../../dependency-injection';
 import { ThirdParty } from '../../dependency-injection/types';
 import displayExample from '../../modules/commander/display-example';
-import { TapjawCommandArgs, TapjawToolCommand } from 'tapjaw-importer';
+import { TapjawCommand } from 'tapjaw-importer';
 import BaseCommandFlags from '../../contracts/base-command-flags';
 
 interface NonReflectHelloOptions extends BaseCommandFlags {
     name: string;
 }
 
-export default class NonReflectHello extends TapjawToolCommand<NonReflectHelloOptions> {
+export default class NonReflectHello extends TapjawCommand.TapjawToolCommand<NonReflectHelloOptions> {
     constructor(private readonly stdout: NodeJS.WritableStream) {
         super();
     }
@@ -26,7 +26,7 @@ export default class NonReflectHello extends TapjawToolCommand<NonReflectHelloOp
                 try {
                     // @Note Perform light validation prior to running .run().
                     await new NonReflectHello(mmtContainer.get<NodeJS.WritableStream>(ThirdParty.StdoutStream)).run(
-                        { caption } as TapjawCommandArgs<string>,
+                        { caption } as TapjawCommand.TapjawCommandArgs<string>,
                         options
                     );
                 } catch (error) {
@@ -35,7 +35,7 @@ export default class NonReflectHello extends TapjawToolCommand<NonReflectHelloOp
             });
     }
 
-    async run({ caption }: TapjawCommandArgs<string>, { name }: NonReflectHelloOptions): Promise<void> {
+    async run({ caption }: TapjawCommand.TapjawCommandArgs<string>, { name }: NonReflectHelloOptions): Promise<void> {
         // @Note Perform more indepth, possibly context specific validation of in coming
         //       arguments and options.
         this.stdout.write('Hello World...');

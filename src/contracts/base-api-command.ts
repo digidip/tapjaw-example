@@ -1,4 +1,4 @@
-import { RateLimitedStdoutIterator, TapjawApiCommand } from 'tapjaw-importer';
+import { TapjawCommand, TapjawIterator } from 'tapjaw-importer';
 import mmtContainer from '../dependency-injection';
 import { Iterators } from '../dependency-injection/types';
 
@@ -7,8 +7,8 @@ export type ActionArgs = any[];
 
 export type CommandAction = (...args: ActionArgs) => void | Promise<void>;
 
-export default abstract class BaseApiCommand extends TapjawApiCommand {
+export default abstract class BaseApiCommand extends TapjawCommand.TapjawApiCommand {
     constructor() {
-        super(mmtContainer.get<RateLimitedStdoutIterator>(Iterators.RateLimitedStdout));
+        super(mmtContainer.get<TapjawIterator.RateLimitedStdoutIterator>(Iterators.RateLimitedStdout));
     }
 }

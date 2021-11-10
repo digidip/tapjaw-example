@@ -1,14 +1,8 @@
 import { Argument } from 'commander';
-import {
-    TapjawCommandArgs,
-    TapjawCommandFlags,
-    TapjawFilterCommand,
-    TapjawMessage,
-    TapjawMetadata,
-} from 'tapjaw-importer';
+import { TapjawCommand, TapjawMessage, TapjawMetadata } from 'tapjaw-importer';
 import jp from 'jsonpath';
 
-interface MatchOptions extends TapjawCommandFlags<string | boolean> {
+interface MatchOptions extends TapjawCommand.TapjawCommandFlags<string | boolean> {
     limit: string;
     start: boolean;
     end: boolean;
@@ -46,12 +40,12 @@ interface MatchOptions extends TapjawCommandFlags<string | boolean> {
         Match.getLogger().error(String(error));
     }
 })
-export default class Match extends TapjawFilterCommand<MatchOptions, TapjawMessage> {
+export default class Match extends TapjawCommand.TapjawFilterCommand<MatchOptions, TapjawMessage.DefaultMessage> {
     protected async onMessageFilter(
-        message: TapjawMessage,
-        { property, matches }: TapjawCommandArgs<string>,
+        message: TapjawMessage.DefaultMessage,
+        { property, matches }: TapjawCommand.TapjawCommandArgs<string>,
         { start, end }: MatchOptions
-    ): Promise<TapjawMessage | null> {
+    ): Promise<TapjawMessage.DefaultMessage | null> {
         const result = jp.query(message, property);
 
         if (Array.isArray(result) && result.length > 0) {

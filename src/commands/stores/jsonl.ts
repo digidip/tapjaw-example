@@ -1,7 +1,7 @@
 import { Argument } from 'commander';
 import { constants } from 'fs';
 import { FileHandle, open } from 'fs/promises';
-import { TapjawCommandArgs, TapjawMetadata, TapjawStoreCommand } from 'tapjaw-importer';
+import { TapjawCommand, TapjawMetadata } from 'tapjaw-importer';
 import BaseCommandFlags from '../../contracts/base-command-flags';
 import ExampleTapjawMessage from '../../contracts/messages/example-tapjaw-message';
 
@@ -33,10 +33,10 @@ interface JsonlOptions extends BaseCommandFlags {
         }
     }
 })
-export default class Jsonl extends TapjawStoreCommand<JsonlOptions, ExampleTapjawMessage> {
+export default class Jsonl extends TapjawCommand.TapjawStoreCommand<JsonlOptions, ExampleTapjawMessage> {
     protected async onStoreMessage(
         message: ExampleTapjawMessage,
-        { file }: TapjawCommandArgs<FileHandle>
+        { file }: TapjawCommand.TapjawCommandArgs<FileHandle>
     ): Promise<void> {
         await file.write(JSON.stringify(message) + '\n', undefined, 'utf-8');
     }
