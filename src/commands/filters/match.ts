@@ -18,8 +18,8 @@ interface MatchOptions extends TapjawCommandFlags<string | boolean> {
 @TapjawMetadata.Command.Description('Filter only messages where a property matches a specified value.')
 @TapjawMetadata.Command.Example('$ bin/run filter match signature 1234567890 --start')
 @TapjawMetadata.Command.Arguments(
-    new Argument('property', 'Property name of the TapjawMessage to compare against (jsonpath)'),
-    new Argument('matches', 'The property value that should be matched')
+    new Argument('<property>', 'Property name of the TapjawMessage to compare against (jsonpath)'),
+    new Argument('<matches>', 'The property value that should be matched')
 )
 @TapjawMetadata.Command.Options(
     {
