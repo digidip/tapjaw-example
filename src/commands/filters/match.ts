@@ -40,12 +40,12 @@ interface MatchOptions extends TapjawCommand.TapjawCommandFlags<string | boolean
         Match.getLogger().error(String(error));
     }
 })
-export default class Match extends TapjawCommand.TapjawFilterCommand<MatchOptions, TapjawMessage.DefaultMessage> {
+export default class Match extends TapjawCommand.TapjawFilterCommand<MatchOptions, TapjawMessage.TapjawMessage> {
     protected async onMessageFilter(
-        message: TapjawMessage.DefaultMessage,
+        message: TapjawMessage.TapjawMessage,
         { property, matches }: TapjawCommand.TapjawCommandArgs<string>,
         { start, end }: MatchOptions
-    ): Promise<TapjawMessage.DefaultMessage | null> {
+    ): Promise<TapjawMessage.TapjawMessage | null> {
         const result = jp.query(message, property);
 
         if (Array.isArray(result) && result.length > 0) {

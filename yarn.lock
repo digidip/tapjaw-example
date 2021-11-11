@@ -3694,9 +3694,10 @@ table@^6.0.9:
     string-width "^4.2.3"
     strip-ansi "^6.0.1"
 
-"tapjaw-importer@https://github.com/digidip/tapjaw-importer.git#modernisation":
-  version "2.0.0-rc1"
-  resolved "https://github.com/digidip/tapjaw-importer.git#ef12bf582b35213ccd88e524620e0effc1d17e48"
+tapjaw-importer@^2.0:
+  version "2.0.0-rc1a"
+  resolved "https://registry.yarnpkg.com/tapjaw-importer/-/tapjaw-importer-2.0.0-rc1a.tgz#90cf1d7626f8353c905ba21ab73e0c667f2eaebe"
+  integrity sha512-bSg7pznr5ZxTxh5hBfjETbcr8WbwiKwRe3icp/mf2gADXmPJgWW6sWVZGeruKmze7Z9IzEBrnrPKcz6B40bcvA==
   dependencies:
     axios "^0.24"
     axios-cookiejar-support "^2"

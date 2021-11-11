@@ -1,6 +1,6 @@
 import { TapjawDate, TapjawMessage } from 'tapjaw-importer';
 
-export default class ExampleTapjawMessage extends TapjawMessage.DefaultMessage {
+export default class ExampleTapjawMessage extends TapjawMessage.TapjawMessage {
     constructor(
         public readonly importId: string,
         protected readonly name: string,
